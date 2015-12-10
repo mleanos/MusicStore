@@ -310,14 +310,22 @@ namespace E2ETests
                     new KeyValuePair<string, string>("__RequestVerificationToken", HtmlDOMHelper.RetrieveAntiForgeryToken(responseContent, "/Account/Login")),
                 };
 
-            var content = new FormUrlEncodedContent(formParameters.ToArray());
-            response = await _httpClient.PostAsync("Account/Login", content);
-            responseContent = await response.Content.ReadAsStringAsync();
-            Assert.Contains(string.Format("Hello {0}!", email), responseContent, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("Log off", responseContent, StringComparison.OrdinalIgnoreCase);
-            //Verify cookie sent
-            Assert.NotNull(_httpClientHandler.CookieContainer.GetCookies(new Uri(_deploymentResult.ApplicationBaseUri)).GetCookieWithName(".AspNet.Microsoft.AspNet.Identity.Application"));
-            _logger.LogInformation("Successfully signed in with user '{email}'", email);
+            try
+            {
+                var content = new FormUrlEncodedContent(formParameters.ToArray());
+                response = await _httpClient.PostAsync("Account/Login", content);
+                responseContent = await response.Content.ReadAsStringAsync();
+                Assert.Contains(string.Format("Hello {0}!", email), responseContent, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("Log off", responseContent, StringComparison.OrdinalIgnoreCase);
+                //Verify cookie sent
+                Assert.NotNull(_httpClientHandler.CookieContainer.GetCookies(new Uri(_deploymentResult.ApplicationBaseUri)).GetCookieWithName(".AspNet.Microsoft.AspNet.Identity.Application"));
+                _logger.LogInformation("Successfully signed in with user '{email}'", email);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Error occurred while trying to sign in with user: " + ex.Message, ex);
+                throw;
+            }
         }
 
         public async Task ChangePassword(string email)

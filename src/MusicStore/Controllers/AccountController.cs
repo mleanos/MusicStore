@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MusicStore.Models;
 
 namespace MusicStore.Controllers
@@ -14,12 +15,15 @@ namespace MusicStore.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly ILogger<AccountController> _logger;
+
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            _logger = logger;
         }
 
         public UserManager<ApplicationUser> UserManager { get; }
@@ -47,23 +51,32 @@ namespace MusicStore.Controllers
                 return View(model);
             }
 
+            _logger.LogError("Before signing in with password");
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to lockoutOnFailure: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+            _logger.LogError("After signing in with password");
+
             if (result.Succeeded)
             {
+                _logger.LogError("Before RedirectToLocal");
                 return RedirectToLocal(returnUrl);
             }
             if (result.RequiresTwoFactor)
             {
+                _logger.LogError("Before RedirectToAction");
                 return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
             }
             if (result.IsLockedOut)
             {
+                _logger.LogError("Before Lockout");
                 return View("Lockout");
             }
             else
             {
+                _logger.LogError("Invalid login attempt");
                 ModelState.AddModelError("", "Invalid login attempt.");
                 return View(model);
             }
@@ -485,11 +498,13 @@ namespace MusicStore.Controllers
         {
             if (Url.IsLocalUrl(returnUrl))
             {
+                _logger.LogError("Url.isLocaurl................");
                 return Redirect(returnUrl);
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                _logger.LogError("redirect to home...");
+                return RedirectToAction("Blah", "Home");
             }
         }
 

@@ -11,6 +11,11 @@ namespace MusicStore.Controllers
 {
     public class HomeController : Controller
     {
+        public IActionResult Blah()
+        {
+            return Content("Blah.......................");
+        }
+
         //
         // GET: /Home/
         public async Task<IActionResult> Index(
