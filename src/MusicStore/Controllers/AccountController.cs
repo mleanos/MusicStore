@@ -504,7 +504,8 @@ namespace MusicStore.Controllers
             else
             {
                 _logger.LogError("redirect to home...");
-                return RedirectToAction("Blah", "Home");
+                //return RedirectToAction("Blah", "Home");
+                return Content("Helooooooooooooooooooooooooooooooooooooooooo");
             }
         }
 
