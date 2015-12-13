@@ -30,7 +30,7 @@ namespace E2ETests
             await smokeTestRunner.SmokeTestSuite(serverType, runtimeFlavor, architecture, applicationBaseUrl);
         }
 
-        [ConditionalTheory, Trait("E2Etests", "E2Etests")]
+        [ConditionalTheory, Trait("E2Etests", "MonoSmoke")]
         [OSSkipCondition(OperatingSystems.Windows)]
         [InlineData(ServerType.Kestrel, RuntimeFlavor.Mono, RuntimeArchitecture.x86, "http://localhost:5005/")]
         public async Task NonWindowsOS(
@@ -108,8 +108,8 @@ namespace E2ETests
             bool noSource = false)
         {
             var logger = new LoggerFactory()
-                           .AddConsole(LogLevel.Information)
-                           .CreateLogger($"Smoke:{serverType}:{donetFlavor}:{architecture}");
+                           .AddConsole(LogLevel.Trace)
+                           .CreateLogger($"SmokeTests:{serverType}:{donetFlavor}:{architecture}");
 
             using (logger.BeginScope("SmokeTestSuite"))
             {

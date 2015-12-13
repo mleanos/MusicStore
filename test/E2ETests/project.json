@@ -6,7 +6,7 @@
         "../../shared/**/*.cs"
     ],
     "commands": {
-        "test": "xunit.runner.aspnet"
+        "test": "xunit.runner.aspnet -trait E2Etests=MonoSmoke"
     },
     "dependencies": {
         "Microsoft.AspNet.Authentication.OpenIdConnect": "1.0.0-*",

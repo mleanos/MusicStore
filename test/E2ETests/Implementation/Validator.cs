@@ -201,8 +201,11 @@ namespace E2ETests
                 };
 
             var content = new FormUrlEncodedContent(formParameters.ToArray());
+            _logger.LogInformation("Before invoking user registration");
             response = await _httpClient.PostAsync("Account/Register", content);
+            _logger.LogInformation("User registration finished");
             responseContent = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("reading response content");
 
             //Account verification
             Assert.Equal<string>(_deploymentResult.ApplicationBaseUri + "Account/Register", response.RequestMessage.RequestUri.AbsoluteUri);

@@ -119,6 +119,8 @@ namespace MusicStore
             // default path is: /runtimeinfo
             app.UseRuntimeInfoPage();
 
+            app.UseMiddleware<MyMiddleware>();
+
             // Configure Session.
             app.UseSession();
 

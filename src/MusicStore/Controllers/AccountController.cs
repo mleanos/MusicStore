@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MusicStore.Models;
 
 namespace MusicStore.Controllers
@@ -14,12 +15,15 @@ namespace MusicStore.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly ILogger<AccountController> _logger;
+
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            _logger = logger;
         }
 
         public UserManager<ApplicationUser> UserManager { get; }
@@ -138,12 +142,18 @@ namespace MusicStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            _logger.LogWarning("Begin registering user");
             if (ModelState.IsValid)
             {
+                _logger.LogWarning("model state is valid");
+
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+
+                    _logger.LogWarning("user creation succeeded");
+
                     //Bug: Remember browser option missing?
                     //Uncomment this and comment the later part if account verification is not needed.
                     //await SignInManager.SignInAsync(user, isPersistent: false);
@@ -155,16 +165,20 @@ namespace MusicStore.Controllers
                     await MessageServices.SendEmailAsync(model.Email, "Confirm your account",
                         "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
 #if !DEMO
+                    _logger.LogWarning("Redirecting to Home/Index");
                     return RedirectToAction("Index", "Home");
 #else
+                    _logger.LogWarning("Showing demo link display");
                     //To display the email link in a friendly page instead of sending email
                     ViewBag.Link = callbackUrl;
                     return View("DemoLinkDisplay");
 #endif
                 }
+                _logger.LogWarning("Model state validation failed");
                 AddErrors(result);
             }
 
+            _logger.LogWarning("Model state validation failed...showing view with errors");
             // If we got this far, something failed, redisplay form
             return View(model);
         }
