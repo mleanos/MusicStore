@@ -110,9 +110,22 @@ namespace MusicStore
 
             // Error page middleware displays a nice formatted HTML page for any unhandled exceptions in the request pipeline.
             // Note: Not recommended for production.
-            app.UseDeveloperExceptionPage();
+            //app.UseDeveloperExceptionPage();
+            app.Use(async (httpContext, next) =>
+            {
+                try
+                {
+                    await next();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("---------------------------------------------------------");
+                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine("---------------------------------------------------------");
+                }
+            });
 
-            app.UseDatabaseErrorPage();
+            //app.UseDatabaseErrorPage();
 
             // Add the runtime information page that can be used by developers
             // to see what packages are used by the application
